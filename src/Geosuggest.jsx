@@ -6,7 +6,6 @@ import debounce from 'lodash.debounce';
 
 import defaults from './defaults';
 import propTypes from './prop-types';
-import filterInputAttributes from './filter-input-attributes';
 
 import Input from './input';
 import SuggestList from './suggest-list';
@@ -15,6 +14,10 @@ import SuggestList from './suggest-list';
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 }
+
+const DefaultWrapper = ({ children }) => (
+
+);
 
 /**
  * Entry point for the Geosuggest component
@@ -55,22 +58,13 @@ class Geosuggest extends React.Component {
     }
   }
 
-  /**
-   * Change inputValue if prop changes
-   * @param {Object} props The new props
-   */
-  componentWillReceiveProps(props) {
-    if (this.props.initialValue !== props.initialValue) {
-      this.setState({userInput: props.initialValue});
-    }
-  }
-
+  // TODO: add logic to allow reinitialization (?)
   /**
    * Called on the client side after component is mounted.
    * Google api sdk object will be obtained and cached as a instance property.
    * Necessary objects of google api will also be determined and saved.
    */
-  componentWillMount() {
+  componentDidMount() {
     if (typeof window === 'undefined') {
       return;
     }
@@ -437,53 +431,52 @@ class Geosuggest extends React.Component {
    * @return {Function} The React element to render
    */
   render() {
-    const attributes = filterInputAttributes(this.props),
-      classes = classnames('geosuggest', this.props.className, {
-        'geosuggest--loading': this.state.isLoading
-      }),
-      shouldRenderLabel = this.props.label && attributes.id,
-      input = (
-        <Input
-          className={this.props.inputClassName}
-          ref={i => (this.input = i)}
-          value={this.state.userInput}
-          doNotSubmitOnEnter={!this.state.isSuggestsHidden}
-          ignoreTab={this.props.ignoreTab}
-          ignoreEnter={this.props.ignoreEnter}
-          style={this.props.style.input}
-          onChange={this.onInputChange}
-          onFocus={this.onInputFocus}
-          onBlur={this.onInputBlur}
-          onKeyDown={this.props.onKeyDown}
-          onKeyPress={this.props.onKeyPress}
-          onNext={this.onNext}
-          onPrev={this.onPrev}
-          onSelect={this.onSelect}
-          onEscape={this.hideSuggests}
-          {...attributes}
-        />
-      ),
-      suggestionsList = (
-        <SuggestList
-          isHidden={this.state.isSuggestsHidden}
-          style={this.props.style.suggests}
-          suggestItemStyle={this.props.style.suggestItem}
-          userInput={this.state.userInput}
-          isHighlightMatch={this.props.highlightMatch}
-          suggestsClassName={this.props.suggestsClassName}
-          suggestItemClassName={this.props.suggestItemClassName}
-          suggests={this.state.suggests}
-          hiddenClassName={this.props.suggestsHiddenClassName}
-          suggestItemActiveClassName={this.props.suggestItemActiveClassName}
-          activeSuggest={this.state.activeSuggest}
-          onSuggestNoResults={this.onSuggestNoResults}
-          onSuggestMouseDown={this.onSuggestMouseDown}
-          onSuggestMouseOut={this.onSuggestMouseOut}
-          onSuggestSelect={this.selectSuggest}
-          renderSuggestItem={this.props.renderSuggestItem}
-          minLength={this.props.minLength}
-        />
-      );
+    const classes = classnames('geosuggest', this.props.className, {
+      'geosuggest--loading': this.state.isLoading
+    });
+    const shouldRenderLabel = this.props.label && attributes.id;
+    const input = (
+      <Input
+        className={this.props.inputClassName}
+        ref={i => (this.input = i)}
+        value={this.state.userInput}
+        doNotSubmitOnEnter={!this.state.isSuggestsHidden}
+        ignoreTab={this.props.ignoreTab}
+        ignoreEnter={this.props.ignoreEnter}
+        style={this.props.style.input}
+        onChange={this.onInputChange}
+        onFocus={this.onInputFocus}
+        onBlur={this.onInputBlur}
+        onKeyDown={this.props.onKeyDown}
+        onKeyPress={this.props.onKeyPress}
+        onNext={this.onNext}
+        onPrev={this.onPrev}
+        onSelect={this.onSelect}
+        onEscape={this.hideSuggests}
+        {...attributes}
+      />
+    );
+    const suggestionsList = (
+      <SuggestList
+        isHidden={this.state.isSuggestsHidden}
+        style={this.props.style.suggests}
+        suggestItemStyle={this.props.style.suggestItem}
+        userInput={this.state.userInput}
+        isHighlightMatch={this.props.highlightMatch}
+        suggestsClassName={this.props.suggestsClassName}
+        suggestItemClassName={this.props.suggestItemClassName}
+        suggests={this.state.suggests}
+        hiddenClassName={this.props.suggestsHiddenClassName}
+        suggestItemActiveClassName={this.props.suggestItemActiveClassName}
+        activeSuggest={this.state.activeSuggest}
+        onSuggestNoResults={this.onSuggestNoResults}
+        onSuggestMouseDown={this.onSuggestMouseDown}
+        onSuggestMouseOut={this.onSuggestMouseOut}
+        onSuggestSelect={this.selectSuggest}
+        renderSuggestItem={this.props.renderSuggestItem}
+        minLength={this.props.minLength}
+      />
+    );
 
     return (
       <div className={classes}>
@@ -505,12 +498,79 @@ class Geosuggest extends React.Component {
  * Types for the properties
  * @type {Object}
  */
-Geosuggest.propTypes = propTypes;
+Geosuggest.propTypes = {
+  fixtures: PropTypes.array,
+  maxFixtures: PropTypes.number,
+  initialValue: PropTypes.string,
+  placeholder: PropTypes.string,
+  disabled: PropTypes.bool,
+  className: PropTypes.string,
+  inputClassName: PropTypes.string,
+  suggestsClassName: PropTypes.string,
+  suggestsHiddenClassName: PropTypes.string,
+  suggestItemClassName: PropTypes.string,
+  suggestItemActiveClassName: PropTypes.string,
+  location: PropTypes.object,
+  radius: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  bounds: PropTypes.object,
+  country: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+  types: PropTypes.array,
+  queryDelay: PropTypes.number,
+  googleMaps: PropTypes.object,
+  highlightMatch: PropTypes.bool,
+  onSuggestSelect: PropTypes.func,
+  onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
+  onChange: PropTypes.func,
+  onKeyPress: PropTypes.func,
+  onUpdateSuggests: PropTypes.func,
+  skipSuggest: PropTypes.func,
+  getSuggestLabel: PropTypes.func,
+  renderSuggestItem: PropTypes.func,
+  autoActivateFirstSuggest: PropTypes.bool,
+  style: PropTypes.shape({
+    input: PropTypes.object,
+    suggests: PropTypes.object,
+    suggestItem: PropTypes.object
+  }),
+  ignoreTab: PropTypes.bool,
+  ignoreEnter: PropTypes.bool,
+  label: PropTypes.string,
+  autoComplete: PropTypes.string,
+  minLength: PropTypes.number
+};
 
 /**
  * Default values for the properties
  * @type {Object}
  */
-Geosuggest.defaultProps = defaults;
+Geosuggest.defaultProps = {
+  fixtures: [],
+  maxFixtures: 10,
+  initialValue: '',
+  placeholder: 'Search places',
+  disabled: false,
+  className: '',
+  inputClassName: '',
+  location: null,
+  radius: null,
+  bounds: null,
+  country: null,
+  types: null,
+  queryDelay: 250,
+  googleMaps: null,
+  highlightMatch: true,
+  getSuggestLabel: suggest => suggest.description,
+  renderSuggestItem: null,
+  autoActivateFirstSuggest: false,
+  style: {
+    input: {},
+    suggests: {},
+    suggestItem: {}
+  },
+  ignoreTab: false,
+  ignoreEnter: false,
+  minLength: 1
+};
 
 export default Geosuggest;
