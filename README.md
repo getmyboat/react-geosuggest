@@ -1,16 +1,14 @@
-# React Geosuggest [![Build Status](https://travis-ci.org/ubilabs/react-geosuggest.svg?branch=master)](https://travis-ci.org/ubilabs/react-geosuggest)
+# React Geosuggest [![Build Status](https://travis-ci.org/getmyboat/react-geosuggest.svg?branch=master)](https://travis-ci.org/getmyboat/react-geosuggest)
 
-A [React](http://facebook.github.io/react/) autosuggest for the Google Maps Places API. You can also define your own suggests as defaults. Works with [Preact](https://github.com/developit/preact), too.
+A [React](http://facebook.github.io/react/) wrapper around the Google Maps Autocomplete API.
 
-
-## Demo
-
-Live demo: [ubilabs.github.io/react-geosuggest](http://ubilabs.github.io/react-geosuggest/)
-
+## Fork Goals
+* Favor composition: make as few assumptions as possible about the display structure of the autosuggest
+* Improve handling and behavior around selection of suggestions
 
 ## Installation
 
-As this component uses the Google Maps Places API to get suggests, you must include the Google Maps Places API in the `<head>` of your HTML:
+As this component uses the Google Maps Places API to get suggests, the Google Maps JS API needs to be available. One way to provide it is through the head of your root html:
 
 ```html
 <!DOCTYPE html>
